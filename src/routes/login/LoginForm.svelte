@@ -2,15 +2,17 @@
   import { goto } from "$app/navigation";
   import Message from "$lib/ui/Message.svelte";
   import UserCredentials from "$lib/ui/UserCredentials.svelte";
+  import { loggedInUser } from "$lib/runes.svelte";
 
   let email = $state("");
   let password = $state("");
   let message = $state("");
 
   async function login() {
-    const success = false;
+    const success = true;
     if (success) {
-      goto("/donate"); // Redirect to the addvenue page on successful login
+      loggedInUser.email = email;
+      goto("/add"); 
     } else {
       message = "Error Trying to sign up";
     }
