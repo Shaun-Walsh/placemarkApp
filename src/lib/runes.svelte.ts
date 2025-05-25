@@ -5,4 +5,6 @@ export const loggedInUser = $state({
     token: "",
     _id: ""
  });
-
+export function getUserId() {
+  return loggedInUser._id;
+}
