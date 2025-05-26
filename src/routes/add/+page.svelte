@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { subTitle, currentDataSets, loggedInUser } from "$lib/runes.svelte";
+  import { subTitle, currentDataSets } from "$lib/runes.svelte";
   import AddVenueForm from "./AddVenueForm.svelte";
   import Card from "$lib/ui/Card.svelte";
   // @ts-ignore
@@ -14,20 +14,20 @@
 
   let map: LeafletMap;
 
-function venueAdded(venue:Venue) {
-    map.addMarker(venue.lat, venue.long, "");
+function venueAdded(venue: Venue) {
+    map.addMarker(venue.lat, venue.long, venue.title, venue.venuetypeid);
     map.moveTo(venue.lat, venue.long);
-  }
+}
 
 onMount(async () => {
     await refreshVenueMap(map);
   });
-  
+
 </script>
 <div class="columns">
   <div class="column">
     <Card title="Venues to Date">
-      <LeafletMap height={30} bind:this={map} />
+      <LeafletMap bind:this={map} />
     </Card>
   </div>
   <div class="column">

@@ -1,4 +1,4 @@
-import { currentDataSets, currentVenues, loggedInUser } from "$lib/runes.svelte";
+import { currentDataSets, loggedInUser } from "$lib/runes.svelte";
 import type { Venue, VenueType } from "$lib/types/placemark-types";
 import LeafletMap from "$lib/ui/LeafletMap.svelte";
 import { placemarkService } from "./placemark-service";
@@ -34,18 +34,27 @@ export function computeByVenueType(venueList: Venue[], venueTypes: VenueType[]) 
   });
 }
 
-export async function refreshVenueMap (map:LeafletMap) {
-   if (!loggedInUser.token) placemarkService.restoreSession();
-    const venues = await placemarkService.getVenues(loggedInUser.token);
-    venues.forEach((venue: Venue) => {
-      if (typeof venue.venuetypeid == "string") {
-        const popup = `${venue.title}`;
-        map.addMarker(venue.lat, venue.long, popup);
-      }
-    });
-    const lastVenue = venues[venues.length - 1];
-    if (lastVenue) {
-      map.moveTo(lastVenue.lat, lastVenue.long);
+export async function refreshVenueMap(map: LeafletMap) {
+  if (!loggedInUser.token) placemarkService.restoreSession();
+  const venues = await placemarkService.getVenues(loggedInUser.token);
+  // DEBUG: Check what venue types you actually have
+  const venueTypes = await placemarkService.getVenueTypes(loggedInUser.token);
+  // Create ID to name mapping
+  const venueTypeMap = new Map();
+  venueTypes.forEach((venueType: VenueType) => {
+    venueTypeMap.set(venueType._id, venueType.title.toLowerCase());
+  });
+  venues.forEach((venue: Venue) => {
+    if (typeof venue.venuetypeid === "string") {
+      const popup = `${venue.title}`;
+      const venueTypeName = venueTypeMap.get(venue.venuetypeid) || 'unknown';
+      map.addMarker(venue.lat, venue.long, popup, venueTypeName);
     }
+  });
+  
+  const lastVenue = venues[venues.length - 1];
+  if (lastVenue) {
+    map.moveTo(lastVenue.lat, lastVenue.long);
   }
+}
 

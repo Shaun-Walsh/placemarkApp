@@ -7,6 +7,7 @@
  
   subTitle.text = "Venue Locations on Map";
   let map: LeafletMap;
+  
 
 onMount(async () => {
    await refreshVenueMap(map);
@@ -14,7 +15,7 @@ onMount(async () => {
 </script>
 
 <Card title="Donations Locations">
-  <LeafletMap height={60} bind:this={map} />
+  <LeafletMap bind:this={map} />
 </Card>
 
   
