@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { venues = [] } = $props();
+  import { currentVenues } from "$lib/runes.svelte";
 </script>
 
 <table class="table is-fullwidth">
@@ -13,7 +13,7 @@
     </tr>
   </thead>
   <tbody>
-    {#each venues as venue}
+    {#each currentVenues.venues as venue}
       <tr>
         <td>
           {venue.title}

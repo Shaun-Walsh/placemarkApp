@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { Session, User, Venue, VenueType } from "$lib/types/placemark-types";
+import { loggedInUser, currentVenueTypes, currentVenues } from "$lib/runes.svelte";
 
 export const placemarkService = {
   baseUrl: "http://localhost:3000",
@@ -24,6 +25,8 @@ export const placemarkService = {
           token: response.data.token,
           _id: response.data._id
         };
+        this.saveSession(session, email);
+        await this.refreshVenueInfo();
         return session;
       }
       return null;
@@ -31,6 +34,14 @@ export const placemarkService = {
       console.log(error);
       return null;
     }
+  },
+
+  saveSession(session: Session, email: string) {
+    loggedInUser.email = email;
+    loggedInUser.name = session.name;
+    loggedInUser.token = session.token;
+    loggedInUser._id = session._id;
+    localStorage.placemark = JSON.stringify(loggedInUser);
   },
 
    
@@ -54,7 +65,8 @@ async getVenueTypes(token: string): Promise<VenueType[]> {
 async addVenue(venue: Venue, venueTypeId: string, token: string): Promise<boolean> {
   try {
     axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-        const response = await axios.post(`${this.baseUrl}/api/venueTypes/${venueTypeId}/venues`, venue)
+        const response = await axios.post(`${this.baseUrl}/api/venueTypes/${venueTypeId}/venues`, venue);
+        await this.refreshVenueInfo();
     return response.status == 200 || response.status == 201;
   } catch (error) {
     console.log(error);
@@ -71,6 +83,35 @@ async addVenue(venue: Venue, venueTypeId: string, token: string): Promise<boolea
     console.log(error)
       return [];
     }
-  } 
+  }, 
+
+   async refreshVenueInfo() {
+    if (loggedInUser.token) {
+    currentVenues.venues = await this.getVenues(loggedInUser.token);
+    currentVenueTypes.venueTypes = await this.getVenueTypes(loggedInUser.token);
+    }
+  },
+
+  async restoreSession() {
+    const savedLoggedInUser = localStorage.placemark;
+    if (savedLoggedInUser) {
+      const session = JSON.parse(savedLoggedInUser);
+      loggedInUser.email = session.email;
+      loggedInUser.name = session.name;
+      loggedInUser.token = session.token;
+      loggedInUser._id = session._id;
+    }
+    await this.refreshVenueInfo();
+  },
+
+  clearSession() {
+    currentVenues.venues = [];
+    currentVenueTypes.venueTypes = [];
+    loggedInUser.email = "";
+    loggedInUser.name = "";
+    loggedInUser.token = "";
+    loggedInUser._id = "";
+    localStorage.removeItem("placemark");
+  },
 
 };

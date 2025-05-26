@@ -1,6 +1,6 @@
 <script lang="ts">
     import { placemarkService } from "$lib/services/placemark-service";
-    import { loggedInUser, getUserId } from "$lib/runes.svelte";
+    import { loggedInUser, currentVenueTypes } from "$lib/runes.svelte";
     import type { Venue } from "$lib/types/placemark-types";
     import Coordinates from "$lib/ui/Coordinates.svelte";
 
@@ -11,7 +11,7 @@
   let lat = $state(52.160858);
   let long = $state(-7.15242);
   let description = $state("");
-  let selectedVenueTypeId = $state("");
+  let selectedVenueTypeId = $state("Public House");
   let message = $state("Please add a venue");
   
   // Props to receive the list of venue types
@@ -21,7 +21,7 @@
   // Function to handle adding a venue
   async function addVenue() {
     if (title && type && contact && description && lat && long && selectedVenueTypeId) {
-     const venueType = venueTypesList.find((venueType) => venueType._id === selectedVenueTypeId);
+     const venueType = currentVenueTypes.venueTypes.find((venueType) => venueType._id === selectedVenueTypeId);
       if (venueType) {
         const venue: Venue = {
           title: title,
@@ -34,20 +34,13 @@
          // user: getUserId() || "6833813fc0d8fb43918e4e4a"
         };
 
-        
-        console.log("Submitting venue:", venue);
-
         const success = await placemarkService.addVenue(venue, selectedVenueTypeId, loggedInUser.token);
         if (!success) {
           message = "Venue not added - some error occurred";
           return;
         }
         message = `Thanks! You added ${title} to ${venueType.title}`;
-        title = "";
-        type = "";
-        contact = "";
-        description = "";
-        selectedVenueTypeId = "";
+        
       }
     } else {
       message = "Please all required fields";
@@ -81,7 +74,7 @@
     <label class="label" for="venueType">Venue Category:</label>
     <div class="select">
       <select bind:value={selectedVenueTypeId}>
-        {#each venueTypesList as venueType}
+        {#each currentVenueTypes.venueTypes as venueType}
           <option value={venueType._id}>{venueType.title}</option>
         {/each}
       </select>
