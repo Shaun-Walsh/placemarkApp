@@ -16,8 +16,8 @@
   let selectedVenueTypeId = $state("Public House");
   let message = $state("Please add a venue");
   
-  // Props to receive the list of venue types
-  let { venueTypesList = [] } = $props();
+
+  let { venueEvent = null } = $props();
   
 
   // Function to handle adding a venue
@@ -42,6 +42,7 @@
           message = "Venue not added - some error occurred";
           return;
         }
+        if (venueEvent) { venueEvent(venue); }
         message = `Thanks! You added ${title} to ${venueType.title}`;
         
       }

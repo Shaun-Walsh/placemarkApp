@@ -1,5 +1,7 @@
-import { currentDataSets } from "$lib/runes.svelte";
+import { currentDataSets, currentVenues, loggedInUser } from "$lib/runes.svelte";
 import type { Venue, VenueType } from "$lib/types/placemark-types";
+import LeafletMap from "$lib/ui/LeafletMap.svelte";
+import { placemarkService } from "./placemark-service";
 
 export function computeByMethod(venueList: Venue[]) {
   currentDataSets.totalByMethod.datasets[0].values = [0, 0];
@@ -31,3 +33,19 @@ export function computeByVenueType(venueList: Venue[], venueTypes: VenueType[]) 
     });
   });
 }
+
+export async function refreshVenueMap (map:LeafletMap) {
+   if (!loggedInUser.token) placemarkService.restoreSession();
+    const venues = await placemarkService.getVenues(loggedInUser.token);
+    venues.forEach((venue: Venue) => {
+      if (typeof venue.venuetypeid == "string") {
+        const popup = `${venue.title}`;
+        map.addMarker(venue.lat, venue.long, popup);
+      }
+    });
+    const lastVenue = venues[venues.length - 1];
+    if (lastVenue) {
+      map.moveTo(lastVenue.lat, lastVenue.long);
+    }
+  }
+
