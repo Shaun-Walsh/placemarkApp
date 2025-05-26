@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { Session, User, Venue, VenueType } from "$lib/types/placemark-types";
 import { loggedInUser, currentVenueTypes, currentVenues } from "$lib/runes.svelte";
+import { computeByMethod, computeByVenueType } from "./placemark-utils";
 
 export const placemarkService = {
   baseUrl: "http://localhost:3000",
@@ -89,6 +90,8 @@ async addVenue(venue: Venue, venueTypeId: string, token: string): Promise<boolea
     if (loggedInUser.token) {
     currentVenues.venues = await this.getVenues(loggedInUser.token);
     currentVenueTypes.venueTypes = await this.getVenueTypes(loggedInUser.token);
+    computeByMethod(currentVenues.venues);
+    computeByVenueType(currentVenues.venues, currentVenueTypes.venueTypes);
     }
   },
 

@@ -9,6 +9,7 @@
       <th>Type</th>
       <th>Contact</th>
       <th>Description</th>
+      <th>Payment</th>
       <th>Coordinates</th>
     </tr>
   </thead>
@@ -26,6 +27,9 @@
         </td>
         <td>
           {venue.description}
+        </td>
+        <td>
+          {venue.payment}
         </td>
         <td>
           {venue.lat}, {venue.long}

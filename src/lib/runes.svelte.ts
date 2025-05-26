@@ -16,3 +16,24 @@ export function getUserId() {
 export const currentVenues = $state({ venues: [] as Venue[] });
 export const currentVenueTypes = $state({ venueTypes: [] as VenueType[] });
 
+export const currentDataSets = $state({
+ totalByMethod: {
+    labels: ["cash", "card"],
+    datasets: [
+      {
+        values: [0, 0]
+      }
+    ]
+  },
+
+  venuesByVenueType: {
+    labels: [],
+    datasets: [
+      {
+        values: [0, 0]
+      }
+    ]
+  }
+})
+
+

@@ -26,7 +26,14 @@ export interface Venue {
   lat: number;
   long: number;
   description: string;
+  payment: string;
   venuetypeid: string;  // Changed from venueType
   _id?: string;
   _v?: number;
 }
+
+export interface DataSet {
+  labels: string[];
+  datasets: [{ values: number[] }];
+}
+

@@ -11,6 +11,8 @@
   let lat = $state(52.160858);
   let long = $state(-7.15242);
   let description = $state("");
+  let payment = ["cash", "card"];
+  let selectedMethod = $state("cash");
   let selectedVenueTypeId = $state("Public House");
   let message = $state("Please add a venue");
   
@@ -20,7 +22,7 @@
 
   // Function to handle adding a venue
   async function addVenue() {
-    if (title && type && contact && description && lat && long && selectedVenueTypeId) {
+    if (title && type && contact && description && lat && long && selectedVenueTypeId && payment) {
      const venueType = currentVenueTypes.venueTypes.find((venueType) => venueType._id === selectedVenueTypeId);
       if (venueType) {
         const venue: Venue = {
@@ -28,6 +30,7 @@
           type: type,
           contact: contact,
           description: description,
+          payment: selectedMethod,
           lat: lat,
           long: long,
           venuetypeid: selectedVenueTypeId,
@@ -70,6 +73,15 @@
     <textarea class="textarea" id="description" name="description" bind:value={description}></textarea>
   </div>
   
+  <div class="field">
+    <div class="control">
+      <label class="label" for="amount">Select Payment Method:</label>
+      {#each payment as method}
+        <input bind:group={selectedMethod} class="radio" type="radio" value={method} /> {method}
+      {/each}
+    </div>
+  </div>
+
   <div class="field">
     <label class="label" for="venueType">Venue Category:</label>
     <div class="select">

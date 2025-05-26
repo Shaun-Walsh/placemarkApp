@@ -1,11 +1,9 @@
 <script lang="ts">
-  import { subTitle, loggedInUser } from "$lib/runes.svelte";
-  import { placemarkService } from "$lib/services/placemark-service";
-  import { onMount } from "svelte";
-  import type { VenueType, Venue } from "$lib/types/placemark-types";
+  import { subTitle, currentDataSets } from "$lib/runes.svelte";
   import AddVenueForm from "./AddVenueForm.svelte";
   import Card from "$lib/ui/Card.svelte";
   import VenueList from "$lib/ui/VenueList.svelte";
+  import Chart from "svelte-frappe-charts";
 
   subTitle.text = "Add a Venue to Placemark";
 
@@ -13,6 +11,7 @@
 <div class="columns">
   <div class="column">
     <Card title="Venues added to Date">
+      <Chart data={currentDataSets.venuesByVenueType} type="pie" />
       <VenueList />
     </Card>
   </div>

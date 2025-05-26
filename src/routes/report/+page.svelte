@@ -17,5 +17,5 @@
   });
 </script>
 <Card title="Venues in Placemark">
-<VenueList {venues} />
+<VenueList />
 </Card>
