@@ -42,7 +42,6 @@ onMount(async () => {
   <div class="column">
     <Card title="Venues added to Date">
       <Chart data={currentDataSets.venuesByVenueType} type="pie" />
-      <VenueList />
     </Card>
   </div>
   <div class="column">
@@ -50,6 +49,4 @@ onMount(async () => {
       <VenueList />
     </Card>
   </div>
- </div>  
-
-<ImageUploadTest />
+ </div> 

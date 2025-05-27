@@ -4,6 +4,7 @@
     import type { Venue } from "$lib/types/placemark-types";
     import Coordinates from "$lib/ui/Coordinates.svelte";
     import ImageUploadTest from "$lib/ui/ImageUploadTest.svelte";
+    import DOMPurify from "dompurify";
 
   // State variables to store form data
   let title = $state("");
@@ -22,22 +23,27 @@
   let { venueEvent = null } = $props();
   
 
-  // Function to handle adding a venue
-  async function addVenue() {
+ async function addVenue() {
     if (title && type && contact && description && lat && long && selectedVenueTypeId && payment) {
-     const venueType = currentVenueTypes.venueTypes.find((venueType) => venueType._id === selectedVenueTypeId);
+      const venueType = currentVenueTypes.venueTypes.find((venueType) => venueType._id === selectedVenueTypeId);
       if (venueType) {
+        // Sanitize user input with stricter config
+        const sanitizedTitle = DOMPurify.sanitize(title, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+        const sanitizedType = DOMPurify.sanitize(type, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+        const sanitizedContact = DOMPurify.sanitize(contact.toString(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+        const sanitizedDescription = DOMPurify.sanitize(description, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+        const sanitizedImageUrl = DOMPurify.sanitize(imageUrl || "", { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+
         const venue: Venue = {
-          title: title,
-          type: type,
-          contact: contact,
-          description: description,
+          title: sanitizedTitle.trim(),
+          type: sanitizedType.trim(),
+          contact: sanitizedContact.trim(),
+          description: sanitizedDescription.trim(),
           payment: selectedMethod,
           lat: lat,
           long: long,
           venuetypeid: selectedVenueTypeId,
-          imageUrl: imageUrl || "",
-         // user: getUserId() || "6833813fc0d8fb43918e4e4a"
+          imageUrl: sanitizedImageUrl,
         };
 
         const success = await placemarkService.addVenue(venue, selectedVenueTypeId, loggedInUser.token);
@@ -45,9 +51,11 @@
           message = "Venue not added - some error occurred";
           return;
         }
-        if (venueEvent) { venueEvent(venue); }
-        message = `Thanks! You added ${title} to ${venueType.title}`;
-        // Reset form fields
+
+        if (venueEvent) venueEvent(venue);
+        message = `Thanks! You added ${sanitizedTitle} to ${venueType.title}`;
+
+        // Reset form
         title = "";
         type = "";
         contact = "";
@@ -55,15 +63,14 @@
         lat = 52.160858;
         long = -7.15242;
         selectedMethod = "cash";
-        selectedVenueTypeId = "Public House";
+        selectedVenueTypeId = currentVenueTypes.venueTypes[0]?._id || ""; // Better initialization
+        imageUrl = "";
       }
     } else {
-      message = "Please all required fields";
+      message = "Please complete all required fields";
     }
-  } 
-
+  }
 </script>
-
 <div>
   <div class="field">
     <label class="label" for="title">Venue Title:</label>

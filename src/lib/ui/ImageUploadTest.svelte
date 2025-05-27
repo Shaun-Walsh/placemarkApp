@@ -2,7 +2,7 @@
   import { placemarkService } from "$lib/services/placemark-service";
   import { loggedInUser } from "$lib/runes.svelte";
 
-  let { imageUrl = $bindable(""), label = "Venue Image (Optional)" } = $props();
+  let { imageUrl = $bindable("") } = $props();
 
   let selectedFile: File | null = $state(null);
   let isUploading = $state(false);
@@ -43,11 +43,12 @@
 </script>
 
 <div class="field">
-  <label class="label">{label}</label>
+  <label class="label" for="image-upload">Choose Image (Optional - Please Upload Before Adding Venue)</label>
   
   <div class="field has-addons">
     <div class="control is-expanded">
       <input 
+        id="image-upload"
         class="input" 
         type="file" 
         accept="image/*" 
