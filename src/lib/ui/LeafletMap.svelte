@@ -23,7 +23,7 @@
     const leaflet = await import("leaflet");
     L = leaflet.default;
 
-    // First, define base layers
+    
     baseLayers = {
       Terrain: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 17,
@@ -36,7 +36,7 @@
       })
     };
 
-    // Then initialize the map with the already-defined baseLayers
+  
     imap = L.map(id, {
       center: [location.lat, location.lng],
       zoom: zoom,
@@ -49,9 +49,9 @@ const pubGroup = L.featureGroup();
 const theatreGroup = L.featureGroup();
 
 venueGroups = {
-  "catholic church": churchGroup,    // Match "Catholic Church"
-  "public house": pubGroup,          // Match "Public House" 
-  "theatre": theatreGroup            // Match "Theatre"
+  "catholic church": churchGroup,   
+  "public house": pubGroup,         
+  "theatre": theatreGroup            
 };
 
 overlays = {
