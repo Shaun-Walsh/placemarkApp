@@ -2,6 +2,7 @@ import { currentDataSets, loggedInUser } from "$lib/runes.svelte";
 import type { Venue, VenueType } from "$lib/types/placemark-types";
 import LeafletMap from "$lib/ui/LeafletMap.svelte";
 import { placemarkService } from "./placemark-service";
+import PaymentMap from "$lib/ui/PaymentMap.svelte";
 
 export function computeByMethod(venueList: Venue[]) {
   currentDataSets.totalByMethod.datasets[0].values = [0, 0];
@@ -37,9 +38,7 @@ export function computeByVenueType(venueList: Venue[], venueTypes: VenueType[]) 
 export async function refreshVenueMap(map: LeafletMap) {
   if (!loggedInUser.token) placemarkService.restoreSession();
   const venues = await placemarkService.getVenues(loggedInUser.token);
-  // DEBUG: Check what venue types you actually have
   const venueTypes = await placemarkService.getVenueTypes(loggedInUser.token);
-  // Create ID to name mapping
   const venueTypeMap = new Map();
   venueTypes.forEach((venueType: VenueType) => {
     venueTypeMap.set(venueType._id, venueType.title.toLowerCase());
@@ -47,8 +46,30 @@ export async function refreshVenueMap(map: LeafletMap) {
   venues.forEach((venue: Venue) => {
     if (typeof venue.venuetypeid === "string") {
       const popup = `${venue.title}`;
-      const venueTypeName = venueTypeMap.get(venue.venuetypeid) || 'unknown';
+      const venueTypeName = venueTypeMap.get(venue.venuetypeid);
       map.addMarker(venue.lat, venue.long, popup, venueTypeName);
+    }
+  });
+  
+  const lastVenue = venues[venues.length - 1];
+  if (lastVenue) {
+    map.moveTo(lastVenue.lat, lastVenue.long);
+  }
+}
+
+export async function refreshPaymentMap(map: PaymentMap) {
+  if (!loggedInUser.token) placemarkService.restoreSession();
+  const venues = await placemarkService.getVenues(loggedInUser.token);
+  const venueTypes = await placemarkService.getVenueTypes(loggedInUser.token);
+  const venueTypeMap = new Map();
+  venueTypes.forEach((venueType: VenueType) => {
+    venueTypeMap.set(venueType._id, venueType.title.toLowerCase());
+  });
+  
+  venues.forEach((venue: Venue) => {
+    if (typeof venue.venuetypeid === "string") {
+      const popup = `${venue.title} ${venue.payment}`;
+      map.addMarker(venue.lat, venue.long, popup, venue.payment);
     }
   });
   

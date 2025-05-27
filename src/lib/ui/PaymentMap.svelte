@@ -44,25 +44,22 @@
       layers: [baseLayers[activeLayer]]
     });
 
-    const churchGroup = L.featureGroup();
-const pubGroup = L.featureGroup();
-const theatreGroup = L.featureGroup();
+const cashGroup = L.featureGroup();
+const cardGroup = L.featureGroup();
 
 venueGroups = {
-  "catholic church": churchGroup,   
-  "public house": pubGroup,         
-  "theatre": theatreGroup            
+  "cash": cashGroup,   
+  "card": cardGroup       
 };
 
 overlays = {
-  "Catholic Churches": venueGroups["catholic church"],
-  "Public Houses": venueGroups["public house"],
-  "Theatres": venueGroups["theatre"]
+  "Cash Payments": venueGroups["cash"],
+  "Card Payments": venueGroups["card"]
 };
 
-imap.addLayer(churchGroup);
-imap.addLayer(pubGroup);
-imap.addLayer(theatreGroup);
+imap.addLayer(cashGroup);
+imap.addLayer(cardGroup);
+
 
 
     control = L.control.layers(baseLayers, overlays).addTo(imap);
