@@ -27,6 +27,7 @@ export interface Venue {
   long: number;
   description: string;
   payment: string;
+  imageUrl: string;
   venuetypeid: string;  // Changed from venueType
   _id?: string;
   _v?: number;

@@ -117,4 +117,76 @@ async addVenue(venue: Venue, venueTypeId: string, token: string): Promise<boolea
     localStorage.removeItem("placemark");
   },
 
+  async uploadImage(imageFile: File, token: string): Promise<string | null> {
+  try {
+    console.log("Service: Starting upload...");
+    const formData = new FormData();
+    formData.append("imagefile", imageFile);
+    
+    const response = await axios.post(`${this.baseUrl}/api/images/upload`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data"
+      }
+    });
+    
+    console.log("Service: Full response:", response.data);
+    const imageUrl = response.data.url;
+    console.log("Service: Extracted URL:", imageUrl);
+    
+    return imageUrl;
+  } catch (error) {
+    console.error("Service: Upload error:", error);
+    return null;
+  }
+},
+
+async deleteImage(imageId: string, token: string): Promise<boolean> {
+  try {
+    console.log("Service: Deleting image:", imageId);
+    const response = await axios.delete(`${this.baseUrl}/api/images/${imageId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log("Service: Delete response:", response.status);
+    return response.status === 204;
+  } catch (error) {
+    console.error("Service: Delete error:", error);
+    return false;
+  }
+},
+
+async updateVenue(venue: Venue, token: string): Promise<boolean> {
+  try {
+    console.log("Service: Updating venue:", venue._id);
+    const response = await axios.put(`${this.baseUrl}/api/venues/${venue._id}`, venue, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log("Service: Update response:", response.status);
+    await this.refreshVenueInfo();
+    return response.status === 200 || response.status === 201;
+  } catch (error) {
+    console.error("Service: Update venue error:", error);
+    return false;
+  }
+},
+
+async clearVenueImage(venueId: string, token: string): Promise<boolean> {
+  try {
+    console.log("Service: Clearing venue image:", venueId);
+    const response = await axios.delete(`${this.baseUrl}/api/venues/${venueId}/image`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log("Service: Clear image response:", response.status);
+    return response.status === 200;
+  } catch (error) {
+    console.error("Service: Clear venue image error:", error);
+    return false;
+  }
+}
 };

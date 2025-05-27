@@ -9,6 +9,7 @@
   import { onMount } from "svelte";
   import type { Venue } from "$lib/types/placemark-types";
   import { refreshVenueMap } from "$lib/services/placemark-utils";
+  import ImageUploadTest from "$lib/ui/ImageUploadTest.svelte";
   
   subTitle.text = "Add a Venue to Placemark";
 
@@ -51,3 +52,4 @@ onMount(async () => {
   </div>
  </div>  
 
+<ImageUploadTest />

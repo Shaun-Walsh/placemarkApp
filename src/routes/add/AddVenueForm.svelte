@@ -3,6 +3,7 @@
     import { loggedInUser, currentVenueTypes } from "$lib/runes.svelte";
     import type { Venue } from "$lib/types/placemark-types";
     import Coordinates from "$lib/ui/Coordinates.svelte";
+    import ImageUploadTest from "$lib/ui/ImageUploadTest.svelte";
 
   // State variables to store form data
   let title = $state("");
@@ -14,6 +15,7 @@
   let payment = ["cash", "card"];
   let selectedMethod = $state("cash");
   let selectedVenueTypeId = $state("Public House");
+  let imageUrl= $state("");
   let message = $state("Please add a venue");
   
 
@@ -34,6 +36,7 @@
           lat: lat,
           long: long,
           venuetypeid: selectedVenueTypeId,
+          imageUrl: imageUrl || "",
          // user: getUserId() || "6833813fc0d8fb43918e4e4a"
         };
 
@@ -103,6 +106,8 @@
   </div>
 
    <Coordinates bind:lat bind:long />
+
+   <ImageUploadTest bind:imageUrl={imageUrl} />
   
   <div class="field">
     <div class="control">

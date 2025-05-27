@@ -5,6 +5,7 @@
   import type { Venue } from "$lib/types/placemark-types";
   import VenueList from "$lib/ui/VenueList.svelte";
   import Card from "$lib/ui/Card.svelte";
+  import VenueCards from "$lib/ui/VenueCards.svelte";
 
   subTitle.text = "List of Venues in Placemark";
   let venues: Venue[] = [];
@@ -17,5 +18,5 @@
   });
 </script>
 <Card title="Venues in Placemark">
-<VenueList />
+<VenueCards />
 </Card>
