@@ -20,7 +20,7 @@ export function computeByVenueType(venueList: Venue[], venueTypes: VenueType[]) 
   currentDataSets.venuesByVenueType.datasets[0].values = [];
   venueTypes.forEach((venueType) => {
     currentDataSets.venuesByVenueType.labels.push(
-      // @ts-ignore
+      // @ts-expect-error red squiggle remover
       `${venueType.title}`
     );
     currentDataSets.venuesByVenueType.datasets[0].values.push(0);

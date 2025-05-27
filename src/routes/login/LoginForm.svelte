@@ -2,16 +2,21 @@
   import { goto } from "$app/navigation";
   import Message from "$lib/ui/Message.svelte";
   import UserCredentials from "$lib/ui/UserCredentials.svelte";
-  import { loggedInUser } from "$lib/runes.svelte";
   import { placemarkService } from "$lib/services/placemark-service";
+  import DOMPurify from "dompurify";
 
   let email = $state("");
   let password = $state("");
   let message = $state("");
 
   async function login() {
-    console.log(`attempting to log in email: ${email} with password: ${password}`);
-    let session = await placemarkService.login(email, password);
+    const sanitizedEmail = DOMPurify.sanitize(email, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
+    const sanitizedPassword = DOMPurify.sanitize(password, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
+
+    console.log(`attempting to log in email: ${sanitizedEmail} with password: ${sanitizedPassword}`);
+
+    const session = await placemarkService.login(sanitizedEmail, sanitizedPassword);
+
     if (session) {
       goto("/add");
     } else {
