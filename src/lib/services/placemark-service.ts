@@ -4,7 +4,8 @@ import { loggedInUser, currentVenueTypes, currentVenues } from "$lib/runes.svelt
 import { computeByMethod, computeByVenueType } from "./placemark-utils";
 
 export const placemarkService = {
-  baseUrl: "http://localhost:3000",
+  //baseUrl: "http://localhost:3000",
+  baseUrl: "https://placemark-sl2m.onrender.com",
 
   async signup(user: User): Promise<boolean> {
     try {
