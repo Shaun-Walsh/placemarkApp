@@ -27,14 +27,15 @@ onMount(async () => {
 <div class="columns">
   <div class="column">
     <Card title="Venues to Date">
-      <LeafletMap bind:this={map} />
+      <LeafletMap height={62.5} bind:this={map} />
     </Card>
   </div>
   <div class="column">
-    <Card title="Please Donate">
-      <VenueList />
+    <Card title="Please add a Venue">
+      <AddVenueForm venueEvent={venueAdded}/>
     </Card>
   </div>
+  
 </div>
   <div class="columns">
   <div class="column">
@@ -44,8 +45,8 @@ onMount(async () => {
     </Card>
   </div>
   <div class="column">
-    <Card title="Please add a Venue">
-      <AddVenueForm venueEvent={venueAdded}/>
+    <Card title="Current Venues">
+      <VenueList />
     </Card>
   </div>
  </div>  

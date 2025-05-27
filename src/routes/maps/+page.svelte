@@ -15,7 +15,7 @@ onMount(async () => {
 </script>
 
 <Card title="Donations Locations">
-  <LeafletMap bind:this={map} />
+  <LeafletMap height={60} bind:this={map} />
 </Card>
 
   

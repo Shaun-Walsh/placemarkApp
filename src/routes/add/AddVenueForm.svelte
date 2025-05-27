@@ -44,7 +44,15 @@
         }
         if (venueEvent) { venueEvent(venue); }
         message = `Thanks! You added ${title} to ${venueType.title}`;
-        
+        // Reset form fields
+        title = "";
+        type = "";
+        contact = "";
+        description = "";
+        lat = 52.160858;
+        long = -7.15242;
+        selectedMethod = "cash";
+        selectedVenueTypeId = "Public House";
       }
     } else {
       message = "Please all required fields";
