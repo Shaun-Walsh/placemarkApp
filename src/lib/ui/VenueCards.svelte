@@ -3,6 +3,7 @@
   import { placemarkService } from "$lib/services/placemark-service";
   import { loggedInUser } from "$lib/runes.svelte";
   import type { Venue } from "$lib/types/placemark-types";
+    import { refreshPlacemarkState } from "$lib/services/placemark-utils";
 
   async function deleteVenueImage(venue: Venue): Promise<void> {
   if (confirm(`Remove image from ${venue.title}?`)) {
@@ -20,8 +21,9 @@
           const cleared = await placemarkService.clearVenueImage(venue._id, loggedInUser.token);
           
           if (cleared) {
-            // Refresh data to show updated state
-            await placemarkService.refreshVenueInfo();
+            const updatedVenues = await placemarkService.getVenues(loggedInUser.token);
+            const venueTypes = await placemarkService.getVenueTypes(loggedInUser.token);
+            await refreshPlacemarkState(updatedVenues, venueTypes);
           } else {
             alert("Image deleted from cloud but failed to update database");
           }

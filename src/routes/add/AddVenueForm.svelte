@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import { placemarkService } from "$lib/services/placemark-service";
     import { loggedInUser, currentVenueTypes } from "$lib/runes.svelte";
     import type { Venue } from "$lib/types/placemark-types";
@@ -122,6 +122,81 @@
     </div>
   </div>
 </div>
+
+<div class="box mt-4">
+  <div class="content has-text-centered">
+    {message}
+  </div>
+</div> -->
+<script lang="ts">
+  import { enhance } from "$app/forms";
+  import Coordinates from "$lib/ui/Coordinates.svelte";
+  import ImageUploadTest from "$lib/ui/ImageUploadTest.svelte";
+
+  let { venueTypeList = [], enhanceFn, message = $bindable("") } = $props();
+
+  let lat = $state(52.160858);
+  let long = $state(-7.15242);
+  let paymentMethods = ["cash", "card"];
+  let imageUrl = $state("");
+</script>
+
+<form method="POST" action="?/addVenue" use:enhance={enhanceFn}>
+  <div class="field">
+    <label class="label" for="title">Venue Title:</label>
+    <input class="input" id="title" name="title" type="text" required />
+  </div>
+  
+  <div class="field">
+    <label class="label" for="type">Venue Type:</label>
+    <input class="input" id="type" name="type" type="text" required />
+  </div>
+  
+  <div class="field">
+    <label class="label" for="contact">Contact Number:</label>
+    <input class="input" id="contact" name="contact" type="text" required />
+  </div>
+  
+  <div class="field">
+    <label class="label" for="description">Description:</label>
+    <textarea class="textarea" id="description" name="description" required></textarea>
+  </div>
+  
+  <div class="field">
+    <div class="control">
+      <label class="label" for="payment">Select Payment Method:</label>
+      {#each paymentMethods as method}
+        <input class="radio" type="radio" value={method} name="payment" /> {method}
+      {/each}
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label" for="venuetypeid">Venue Category:</label>
+    <div class="select">
+      <select name="venuetypeid" required>
+        {#each venueTypeList as venueType}
+          <option value={venueType._id}>{venueType.title}</option>
+        {/each}
+      </select>
+    </div>
+  </div>
+
+  <Coordinates bind:lat bind:long />
+
+  <ImageUploadTest bind:imageUrl={imageUrl} />
+
+  <!-- Hidden inputs to include coordinates in form -->
+  <input type="hidden" name="lat" bind:value={lat} />
+  <input type="hidden" name="long" bind:value={long} />
+  <input type="hidden" name="imageUrl" bind:value={imageUrl} />
+  
+  <div class="field">
+    <div class="control">
+      <button class="button is-success is-fullwidth">Add Venue</button>
+    </div>
+  </div>
+</form>
 
 <div class="box mt-4">
   <div class="content has-text-centered">

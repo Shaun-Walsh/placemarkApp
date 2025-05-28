@@ -2,7 +2,8 @@
   import { Gallery } from "flowbite-svelte";
   import { onMount } from "svelte";
   import { placemarkService } from "$lib/services/placemark-service";
-  import { currentVenues } from "$lib/runes.svelte";
+  import { currentVenues, loggedInUser } from "$lib/runes.svelte";
+  import { refreshPlacemarkState } from "$lib/services/placemark-utils";
   
   // https://flowbite-svelte.com/docs/components/gallery
   $: venueImages = currentVenues.venues
@@ -19,8 +20,9 @@
   $: column4 = venueImages.filter((_, index) => index % 4 === 3);
 
   onMount(async () => {
-    await placemarkService.restoreSession();
-    await placemarkService.refreshVenueInfo();
+    const updatedVenues = await placemarkService.getVenues(loggedInUser.token);
+    const venueTypes = await placemarkService.getVenueTypes(loggedInUser.token);
+    await refreshPlacemarkState(updatedVenues, venueTypes);
   });
 </script>
 

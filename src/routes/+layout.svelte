@@ -1,18 +1,26 @@
 <script lang="ts">
-  import { browser } from "$app/environment";
-  import { loggedInUser } from "$lib/runes.svelte";
-    import { placemarkService } from "$lib/services/placemark-service";
   import Heading from "$lib/ui/Heading.svelte";
   import Menu from "$lib/ui/Menu.svelte";
-  import { onMount } from "svelte";
+  import { loggedInUser } from "$lib/runes.svelte";
 
-  onMount(async () => {
-    await placemarkService.restoreSession();
-  });
+  export let data: any;
+  if (data.session) {
+    console.log("Setting session data:", data.session); // Debug line
+    loggedInUser.email = data.session.email;
+    loggedInUser.name = data.session.name;
+    loggedInUser.token = data.session.token;
+    loggedInUser._id = data.session._id;
+  } else {
+    console.log("No session data found"); // Debug line
+    loggedInUser.email = "";
+    loggedInUser.name = "";
+    loggedInUser.token = "";
+    loggedInUser._id = "";
+  }
 </script>
 
 <div class="container">
-  {#if loggedInUser.email}
+  {#if loggedInUser.token}
     <Menu />
     <Heading />
   {/if}

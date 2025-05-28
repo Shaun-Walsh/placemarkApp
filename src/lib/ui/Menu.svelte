@@ -18,7 +18,7 @@
         <a class="navbar-item" href="/charts"> Charts </a>
         <a class="navbar-item" href="/maps"> Maps </a>
         <a class="navbar-item" href="/gallery"> Gallery </a>
-        <a class="navbar-item" href="/logout"> Logout [{loggedInUser.email}]</a>
+        <a data-sveltekit-preload-data="tap" class="navbar-item" href="/logout"> Logout [{loggedInUser.email}]</a>
         
       </div>
       <div></div>

@@ -2,6 +2,7 @@ export interface Session {
   name: string;
   _id: string;
   token: string;
+  email: string;
 }
 
 export interface User {
@@ -15,8 +16,8 @@ export interface User {
 export interface VenueType {
   title: string;
   _id?: string;
-  userid?: string;  // ID of the user who created this venue type
-  __v?: number;     // MongoDB's internal version field
+  userid?: string;
+  __v?: number;
 }
 
 export interface Venue {
@@ -28,7 +29,7 @@ export interface Venue {
   description: string;
   payment: string;
   imageUrl: string;
-  venuetypeid: string;  // Changed from venueType
+  venuetypeid: string; 
   _id?: string;
   _v?: number;
 }

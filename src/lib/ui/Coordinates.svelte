@@ -9,7 +9,7 @@
   <div class="field-body">
     <div class="field">
       <p class="control is-expanded">
-        <input id="long" class="input" type="number" bind:value={long} />
+        <input id="long" class="input" type="number" step="any" name="long" bind:value={long} />
       </p>
     </div>
     <div class="field-label is-normal">
@@ -17,9 +17,8 @@
     </div>
     <div class="field">
       <p class="control is-expanded">
-        <input id="lat" class="input" type="number" bind:value={lat} />
+        <input id="lat" class="input" type="number" step="any" name="lat" bind:value={lat} />
       </p>
     </div>
   </div>
 </div>
-

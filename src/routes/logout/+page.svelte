@@ -1,8 +1,8 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
-  import { loggedInUser } from "$lib/runes.svelte";
-  import { placemarkService } from "$lib/services/placemark-service";
+  import { clearPlacemarkState } from "$lib/services/placemark-utils";
 
-  placemarkService.clearSession();
-  goto("/");
+  clearPlacemarkState();
+  if (browser) goto("/");
 </script>

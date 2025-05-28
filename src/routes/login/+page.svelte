@@ -6,7 +6,7 @@
   <div class="hero-body">
     <div class="container">
       <div class="column is-4 is-offset-4">
-        <h3 class="title has-text-black has-text-centered">Login to DONATION</h3>
+        <h3 class="title has-text-black has-text-centered">Login to Placemark</h3>
         <LoginForm />
       </div>
     </div>

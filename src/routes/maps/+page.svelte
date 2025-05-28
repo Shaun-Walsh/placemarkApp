@@ -4,15 +4,18 @@
   import LeafletMap from "$lib/ui/LeafletMap.svelte";
   import PaymentMap from "$lib/ui/PaymentMap.svelte";
   import { onMount } from "svelte";
-  import { refreshVenueMap, refreshPaymentMap } from "$lib/services/placemark-utils";
+  import { refreshVenueMap, refreshPaymentMap, refreshPlacemarkState } from "$lib/services/placemark-utils";
+  import type { PageProps } from "./$types";
  
   subTitle.text = "Venue Locations on Map";
+  
+  let { data }: PageProps = $props();
   let map: LeafletMap;
   let map2: PaymentMap;
   
-
-onMount(async () => {
-   await refreshVenueMap(map);
+  onMount(async () => {
+    await refreshPlacemarkState(data.venues ?? [], data.venueTypes ?? []);
+    await refreshVenueMap(map);
     await refreshPaymentMap(map2);
   });
 </script>
@@ -29,4 +32,3 @@ onMount(async () => {
     </Card>
   </div>
 </div>
-  

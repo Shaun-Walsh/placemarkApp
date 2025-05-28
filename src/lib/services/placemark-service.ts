@@ -1,12 +1,11 @@
 import axios from "axios";
 import type { Session, User, Venue, VenueType } from "$lib/types/placemark-types";
-import { loggedInUser, currentVenueTypes, currentVenues } from "$lib/runes.svelte";
-import { computeByMethod, computeByVenueType } from "./placemark-utils";
 
 export const placemarkService = {
-  //baseUrl: "http://localhost:3000",
+ // baseUrl: "http://localhost:3000",
   baseUrl: "https://placemark-sl2m.onrender.com",
 
+  // Function to sign up a new user
   async signup(user: User): Promise<boolean> {
     try {
       const response = await axios.post(`${this.baseUrl}/api/users`, user);
@@ -17,36 +16,30 @@ export const placemarkService = {
     }
   },
 
+  // Function to log in a user
   async login(email: string, password: string): Promise<Session | null> {
-    try {
-      const response = await axios.post(`${this.baseUrl}/api/users/authenticate`, { email, password });
-      if (response.data.success) {
-        axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
-        const session: Session = {
-          name: response.data.name,
-          token: response.data.token,
-          _id: response.data._id
-        };
-        this.saveSession(session, email);
-        await this.refreshVenueInfo();
-        return session;
-      }
-      return null;
-    } catch (error) {
-      console.log(error);
-      return null;
+  try {
+    const response = await axios.post(`${this.baseUrl}/api/users/authenticate`, { email, password });
+    
+    if (response.data.success) {
+      axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
+      const session: Session = {
+        name: response.data.name || response.data.user?.name || "User", 
+        token: response.data.token,
+        email: response.data.email || response.data.user?.email || email,
+        _id: response.data._id || response.data.user?._id || response.data.id
+      };
+
+      return session;
     }
-  },
+    return null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+},
 
-  saveSession(session: Session, email: string) {
-    loggedInUser.email = email;
-    loggedInUser.name = session.name;
-    loggedInUser.token = session.token;
-    loggedInUser._id = session._id;
-    localStorage.placemark = JSON.stringify(loggedInUser);
-  },
-
-   
+// Function to get the venue types
 async getVenueTypes(token: string): Promise<VenueType[]> {
   try {
     if (!token) {
@@ -63,12 +56,11 @@ async getVenueTypes(token: string): Promise<VenueType[]> {
   }
 },
 
-
+//Function to add a new venue
 async addVenue(venue: Venue, venueTypeId: string, token: string): Promise<boolean> {
   try {
     axios.defaults.headers.common["Authorization"] = "Bearer " + token;
         const response = await axios.post(`${this.baseUrl}/api/venueTypes/${venueTypeId}/venues`, venue);
-        await this.refreshVenueInfo();
     return response.status == 200 || response.status == 201;
   } catch (error) {
     console.log(error);
@@ -76,6 +68,7 @@ async addVenue(venue: Venue, venueTypeId: string, token: string): Promise<boolea
   }
 },
 
+// Function to get venues
   async getVenues(token: string): Promise<Venue[]> {
     try {
       axios.defaults.headers.common["Authorization"] = "Bearer " + token;
@@ -87,40 +80,16 @@ async addVenue(venue: Venue, venueTypeId: string, token: string): Promise<boolea
     }
   }, 
 
-   async refreshVenueInfo() {
-    if (loggedInUser.token) {
-    currentVenues.venues = await this.getVenues(loggedInUser.token);
-    currentVenueTypes.venueTypes = await this.getVenueTypes(loggedInUser.token);
-    computeByMethod(currentVenues.venues);
-    computeByVenueType(currentVenues.venues, currentVenueTypes.venueTypes);
-    }
-  },
-
-  async restoreSession() {
-    const savedLoggedInUser = localStorage.placemark;
-    if (savedLoggedInUser) {
-      const session = JSON.parse(savedLoggedInUser);
-      loggedInUser.email = session.email;
-      loggedInUser.name = session.name;
-      loggedInUser.token = session.token;
-      loggedInUser._id = session._id;
-    }
-    await this.refreshVenueInfo();
-  },
-
-  clearSession() {
-    currentVenues.venues = [];
-    currentVenueTypes.venueTypes = [];
-    loggedInUser.email = "";
-    loggedInUser.name = "";
-    loggedInUser.token = "";
-    loggedInUser._id = "";
-    localStorage.removeItem("placemark");
-  },
-
+  //Funnction to upload an image
   async uploadImage(imageFile: File, token: string): Promise<string | null> {
   try {
     console.log("Service: Starting upload...");
+    console.log("File details:", {
+      name: imageFile.name,
+      size: imageFile.size,
+      type: imageFile.type
+    });
+    
     const formData = new FormData();
     formData.append("imagefile", imageFile);
     
@@ -131,17 +100,25 @@ async addVenue(venue: Venue, venueTypeId: string, token: string): Promise<boolea
       }
     });
     
-    console.log("Service: Full response:", response.data);
     const imageUrl = response.data.url;
-    console.log("Service: Extracted URL:", imageUrl);
+    
+    if (!imageUrl) {
+      console.error("No URL in response data:", response.data);
+    }
     
     return imageUrl;
   } catch (error) {
     console.error("Service: Upload error:", error);
+    // @ts-expect-error remove squiggle
+    if (error.response) {
+      // @ts-expect-error remove squiggle
+      console.error("Error response data:", error.response.data);
+    }
     return null;
   }
 },
 
+//Function to delete an image
 async deleteImage(imageId: string, token: string): Promise<boolean> {
   try {
     console.log("Service: Deleting image:", imageId);
@@ -150,7 +127,6 @@ async deleteImage(imageId: string, token: string): Promise<boolean> {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log("Service: Delete response:", response.status);
     return response.status === 204;
   } catch (error) {
     console.error("Service: Delete error:", error);
@@ -158,16 +134,14 @@ async deleteImage(imageId: string, token: string): Promise<boolean> {
   }
 },
 
+// Function to update a venue
 async updateVenue(venue: Venue, token: string): Promise<boolean> {
   try {
-    console.log("Service: Updating venue:", venue._id);
     const response = await axios.put(`${this.baseUrl}/api/venues/${venue._id}`, venue, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log("Service: Update response:", response.status);
-    await this.refreshVenueInfo();
     return response.status === 200 || response.status === 201;
   } catch (error) {
     console.error("Service: Update venue error:", error);
@@ -175,15 +149,14 @@ async updateVenue(venue: Venue, token: string): Promise<boolean> {
   }
 },
 
+//Function do clear the image of a venue
 async clearVenueImage(venueId: string, token: string): Promise<boolean> {
   try {
-    console.log("Service: Clearing venue image:", venueId);
     const response = await axios.delete(`${this.baseUrl}/api/venues/${venueId}/image`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log("Service: Clear image response:", response.status);
     return response.status === 200;
   } catch (error) {
     console.error("Service: Clear venue image error:", error);
